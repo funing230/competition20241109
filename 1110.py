@@ -2,6 +2,7 @@ import pandas as pd
 from util import *
 from gensim.models import Word2Vec
 
+
 # 假设 read_data 返回的是DataFrame
 train_dataset = read_data('train.json')
 
@@ -28,8 +29,20 @@ id_label_df = train_dataset[['id', 'label_id']]
 # 按顺序合并DataFrame
 combined_df = pd.concat([id_label_df, vector_df], axis=1)
 
-print(combined_df.shape)
-print(combined_df.columns)
-print(combined_df.head(1))
+# print(combined_df.shape)
+# print(combined_df.columns)
+# print(combined_df.head(1))# -----------------------------------
+
+test_size=0.2
+train_set,test_set=split_dataset(combined_df,test_size=test_size)
+
+print(train_set.shape)
+print(test_set.shape)
+
+print("-------------------------Begin--------------------------------------------------")
+
+train_set.to_csv('train_set.csv', index=False)
+test_set.to_csv('test_set.csv', index=False)
 
 
+print("--------------------------End-------------------------------------------------")

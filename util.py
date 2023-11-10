@@ -11,6 +11,7 @@ from gensim.models import Word2Vec
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import jieba
 import json
+from sklearn.model_selection import StratifiedShuffleSplit
 
 #读取数据json
 def read_data(filename):
@@ -112,7 +113,17 @@ def get_features_vectors(tokenized_data, loaded_model, MAX_SEQUENCE_LENGTH):
     padded_features_vector = pad_sequences(features_vectors, maxlen=MAX_SEQUENCE_LENGTH, padding='post', truncating='post')
 
     # 打印最长字段的信息
-    print("最长字段的长度:", max_length)
-    print("最长字段的数据:", max_data)
+    # print("最长字段的长度:", max_length)
+    # print("最长字段的数据:", max_data)
 
     return padded_features_vector
+
+
+def split_dataset(combined_df,test_size):
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=42)
+
+    # 生成索引以划分数据
+    for train_index, test_index in sss.split(combined_df, combined_df['label_id']):
+        train_set = combined_df.iloc[train_index]
+        test_set = combined_df.iloc[test_index]
+    return train_set,test_set
