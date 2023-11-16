@@ -61,15 +61,15 @@ def process_data(messages):
         # processed_corpus.append([item for item in processed_text if len(item) != 0])
     return processed_corpus
 # 训练word2vec模型
-def train_w2v(tokenized_data):
+def train_w2v(tokenized_data,EMBEDDING_DIM):
     sentences=[process_data(item["title"]) + process_data(item["assignee"]) + process_data(item["abstract"]) for item in tokenized_data]
     # 清除句子中所有的空字符串
     cleaned_nested_list = [[word for word in sublist if word != ''] for sublist in sentences]
     # 训练word2vec模型
     model = Word2Vec(sentences=cleaned_nested_list,
-                     vector_size=300, window=5, min_count=1, workers=4)
+                     vector_size=EMBEDDING_DIM, window=5, min_count=1, workers=4)
     # 假设你的Word2Vec模型是model
-    model.save("word2vec_model202311091711.model")
+    model.save("word2vec_model20231116.model")
 
 # 将汉字文本转换为Word2Vec向量
 def text_to_vectors(text, model):
@@ -94,29 +94,18 @@ def text_to_vectors(text, model):
 #
 #     return padded_features_vector
 
-def get_features_vectors(tokenized_data, loaded_model, MAX_SEQUENCE_LENGTH):
-    features_vectors = []
-    max_length = 0  # 初始化最长长度为0
-    max_data = None  # 初始化最长的数据为None
-
-    for item in tokenized_data:
-        # Combine processed data
-        combined_data = process_data(item["title"]) + process_data(item["assignee"]) + process_data(item["abstract"])
-        combined_length = len(combined_data)  # 计算结合后数据的长度
-        features_vectors.append(text_to_vectors(combined_data, loaded_model))
-
-        # 检查当前字段长度是否是最长的
-        if combined_length > max_length:
-            max_length = combined_length
-            max_data = item  # 保存最长的数据项
-
-    padded_features_vector = pad_sequences(features_vectors, maxlen=MAX_SEQUENCE_LENGTH, padding='post', truncating='post')
-
-    # 打印最长字段的信息
-    # print("最长字段的长度:", max_length)
-    # print("最长字段的数据:", max_data)
-
-    return padded_features_vector
+# def get_features_vectors(tokenized_data, loaded_model, MAX_SEQUENCE_LENGTH):
+#     features_vectors = []
+#     for item in tokenized_data:
+#         # Combine processed data
+#         combined_data = process_data(item["title"]) + process_data(item["assignee"]) + process_data(item["abstract"])
+#         features_vectors.append(text_to_vectors(combined_data, loaded_model))
+#
+#     # features_vectors=pd.DataFrame(features_vectors)
+#     # print(features_vectors[0])
+#     padded_features_vector = pad_sequences(features_vectors, maxlen=MAX_SEQUENCE_LENGTH, padding='post', truncating='post', dtype='float32')
+#     # print(padded_features_vector[0])
+#     return padded_features_vector
 
 
 def split_dataset(combined_df,test_size):
@@ -127,3 +116,38 @@ def split_dataset(combined_df,test_size):
         train_set = combined_df.iloc[train_index]
         test_set = combined_df.iloc[test_index]
     return train_set,test_set
+
+
+def get_features_vectors(tokenized_data, loaded_model, MAX_SEQUENCE_LENGTH):
+    # Initialize a list to store the feature vectors
+    features_vectors = []
+
+    for item in tokenized_data:
+        # Combine processed data from different fields
+        combined_data = process_data(item["title"]) + \
+                        process_data(item["assignee"]) + \
+                        process_data(item["abstract"])
+        # Convert text data to vectors using the loaded model
+        features_vectors.append(text_to_vectors(combined_data, loaded_model))
+
+    # Pad the feature vectors to ensure uniform length
+    padded_features_vector = pad_sequences(features_vectors,
+                                           maxlen=MAX_SEQUENCE_LENGTH,
+                                           padding='post',
+                                           truncating='post',
+                                           dtype='float32')
+    return padded_features_vector
+
+
+def get_features_vectors(tokenized_data, loaded_model, MAX_SEQUENCE_LENGTH, EMBEDDING_DIM):
+    features_vectors = []
+    for item in tokenized_data:
+        # Combine processed data
+        combined_data = process_data(item["title"]) + process_data(item["assignee"]) + process_data(item["abstract"])
+        vectors = text_to_vectors(combined_data, loaded_model)
+        if len(vectors) > MAX_SEQUENCE_LENGTH:
+            vectors = vectors[:MAX_SEQUENCE_LENGTH]
+        else:
+            vectors += [[0.0] * EMBEDDING_DIM] * (MAX_SEQUENCE_LENGTH - len(vectors))
+        features_vectors.append(vectors)
+    return np.array(features_vectors, dtype='float32')

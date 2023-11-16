@@ -38,7 +38,10 @@ from sklearn.preprocessing import MinMaxScaler
 # timeout_seconds = 10
 import json
 from sklearn.preprocessing import StandardScaler
+import warnings
 
+# 屏蔽所有警告
+warnings.filterwarnings('ignore')
 
 def count_calls(func):
     def wrapper(*args, **kwargs):
@@ -299,8 +302,8 @@ sys.stderr = Logger("./model/test_error.log", sys.stderr)
 
 
 
-train_set = pd.read_csv('train_set.csv')
-test_set  = pd.read_csv('test_set.csv')
+train_set = pd.read_csv('train_set1116.csv')
+test_set  = pd.read_csv('test_set1116.csv')
 
 
 print(train_set.shape)
@@ -319,8 +322,8 @@ y_test = test_set['label_id']
 def convert_string_to_array(str_series):
     return np.array([np.fromstring(x[1:-1], sep=' ') for x in str_series])
 
-X_train_converted = convert_string_to_array(X_train_.iloc[:, 0])
-X_test_converted = convert_string_to_array(X_test_.iloc[:, 0])
+X_train_converted = X_train_ #convert_string_to_array(X_train_.iloc[:, 0])
+X_test_converted = X_test_ #convert_string_to_array(X_test_.iloc[:, 0])
 
 # 特征缩放
 scaler = StandardScaler()
