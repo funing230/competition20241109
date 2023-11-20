@@ -36,8 +36,8 @@ from sklearn.ensemble import AdaBoostClassifier, VotingClassifier
 from sklearn.tree import DecisionTreeClassifier
 from util import *
 
-train_set = pd.read_csv('train_set1116.csv')
-test_set  = pd.read_csv('test_set1116.csv')
+train_set = pd.read_csv('ShuffleSplit_train_set1117.csv')
+test_set  = pd.read_csv('ShuffleSplit_test_set1117.csv')
 
 
 print(train_set.shape)
@@ -53,7 +53,7 @@ X_test = test_set.drop(['id', 'label_id'], axis=1)
 y_test = test_set['label_id']
 
 
-# 特征缩放
+# # 特征缩放
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
@@ -135,22 +135,6 @@ def train_and_optimize_model(X_train, y_train):
 
 
 
-# # 训练模型
-# model = train_and_optimize_model(X_train, y_train)
-#
-# # 进行预测
-# y_pred = model.predict(X_test)
-#
-#
-
-
-# # 创建一个决策树分类器作为基估计器
-# base_estimator = DecisionTreeClassifier(max_depth=2)
-# # 创建 AdaBoost 分类器实例
-# ada_model = AdaBoostClassifier(base_estimator=base_estimator,
-#                                n_estimators=100,
-#                                learning_rate=1)
-
 base_classifier = GradientBoostingClassifier(n_estimators=100, max_depth=9, random_state=1016, verbose=3)
 # Create an AdaBoostClassifier and use the gradient lift tree as the base classifier
 adaboost = AdaBoostClassifier(base_estimator=base_classifier, learning_rate=0.001, n_estimators=100, random_state=1016)
@@ -158,19 +142,21 @@ adaboost = AdaBoostClassifier(base_estimator=base_classifier, learning_rate=0.00
 # 训练模型
 adaboost.fit(X_train, y_train)
 # 保存模型
-dump(adaboost, 'ada_model.joblib')
+dump(adaboost, 'ada_model1117.joblib')
 # 进行预测
 y_pred = adaboost.predict(X_test)
-y_pred.to_csv('y_pred1116.csv', index=False)
+
 
 
 # # 加载模型
 # ada_model_loaded = load('ada_model.joblib')
 # # 使用加载的模型进行预测
-# y_pred_loaded = ada_model_loaded.predict(X_test)
+# y_pred = ada_model_loaded.predict(X_test)
 
 # 性能评估
 accuracy = f1_score(y_test, y_pred, average='macro')
 cm = confusion_matrix(y_test, y_pred)
 print('Accuracy:', accuracy)
 print('Confusion Matrix:\n', cm)
+
+

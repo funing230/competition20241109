@@ -1,7 +1,7 @@
 import pandas as pd
 from util import *
 from gensim.models import Word2Vec
-
+from sklearn.model_selection import StratifiedShuffleSplit
 
 # 假设 read_data 返回的是DataFrame
 train_dataset = read_data('train.json')
@@ -10,7 +10,7 @@ train_dataset = read_data('train.json')
 train_tokenized_data = token_data(train_dataset.values)
 
 # 加载保存的Word2Vec模型
-loaded_model = Word2Vec.load("word2vec_model20231116.model")
+loaded_model = Word2Vec.load("jieba_word2vec_corpus_model20231117.model")
 
 # 汉字通过word2vec数字化 Pad the feature vectors
 MAX_SEQUENCE_LENGTH = 250
@@ -32,16 +32,29 @@ combined_df = pd.concat([id_label_df, vector_df], axis=1)
 # print(combined_df.columns)
 # print(combined_df.head(1))# -----------------------------------
 
+
 test_size=0.2
 train_set,test_set=split_dataset(combined_df,test_size=test_size)
+#
+
+# # 创建 StratifiedShuffleSplit 实例
+# sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+# # 根据目标列进行分层抽样
+# for train_index, test_index in sss.split(combined_df.drop(columns=['id', 'label_id']), combined_df['label_id']):
+#     train_set = combined_df.iloc[train_index]
+#     test_set = combined_df.iloc[test_index]
 
 print(train_set.shape)
 print(test_set.shape)
 
+label_counts = combined_df['label_id'].value_counts()
+print(label_counts)
+
+
 print("-------------------------Begin--------------------------------------------------")
 
-train_set.to_csv('train_set1116.csv', index=False)
-test_set.to_csv('test_set1116.csv', index=False)
+train_set.to_csv('ShuffleSplit_train_set1117.csv', index=False)
+test_set.to_csv('ShuffleSplit_test_set1117.csv', index=False)
 
 
 print("--------------------------End-------------------------------------------------")

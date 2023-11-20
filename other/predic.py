@@ -14,7 +14,7 @@ import json
 from torch.utils.data import DataLoader, RandomSampler
 from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, AutoModel, BertPreTrainedModel, \
     BertModel
-from modeling_nezha.modeling_nezha import NeZhaModel, NeZhaConfig, NeZhaPreTrainedModel
+from NeZha.model.modeling_nezha import NeZhaModel, NeZhaConfig, NeZhaPreTrainedModel
 import torch.nn.functional as F
 
 max_seq_len = 512

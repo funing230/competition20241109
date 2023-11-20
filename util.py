@@ -26,6 +26,7 @@ def read_data(filename):
     # dataset = dataset.values
     return dataset
 #分解单词 title  assignee  abstract
+
 def token_data(dataset):
     tokenized_data = []
     for item in dataset:
@@ -69,7 +70,7 @@ def train_w2v(tokenized_data,EMBEDDING_DIM):
     model = Word2Vec(sentences=cleaned_nested_list,
                      vector_size=EMBEDDING_DIM, window=5, min_count=1, workers=4)
     # 假设你的Word2Vec模型是model
-    model.save("word2vec_model20231116.model")
+    model.save("word2vec_model_20231116.model")
 
 # 将汉字文本转换为Word2Vec向量
 def text_to_vectors(text, model):

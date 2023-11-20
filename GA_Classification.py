@@ -305,7 +305,6 @@ sys.stderr = Logger("./model/test_error.log", sys.stderr)
 train_set = pd.read_csv('train_set1116.csv')
 test_set  = pd.read_csv('test_set1116.csv')
 
-
 print(train_set.shape)
 print(test_set.shape)
 

@@ -1,21 +1,15 @@
-from util import *
+from util_new import *
 from gensim.models import Word2Vec
+import thulac
 
-train_dataset = read_data('train.json')
+
+# thu = thulac.thulac()
+train_dataset = read_excel('corpus.xlsx')
 # 分词，并将分词结果存储在字典中
-train_tokenized_data = token_data(train_dataset.values)
+train_tokenized_data = token_data_corpus(train_dataset.values)
 EMBEDDING_DIM=100
 #-----------第一次使用时打开------------------------------
 # 训练Word2Vec模型
 train_w2v(train_tokenized_data,EMBEDDING_DIM)
 #-----------第一次使用时打开------------------------------
 
-# # 加载保存的Word2Vec模型
-# loaded_model = Word2Vec.load("word2vec_model202311091711.model")
-#
-# # 汉字通过word2vec数字化 Pad the feature vectors
-# MAX_SEQUENCE_LENGTH = 500
-# padded_features_vector=get_features_vectors(train_tokenized_data,loaded_model,MAX_SEQUENCE_LENGTH)
-#
-# # Add any specific print statements if necessary
-# print(padded_features_vector)

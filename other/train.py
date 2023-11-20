@@ -12,6 +12,9 @@
 import torch
 import json
 import os
+
+import main
+
 os.environ["CUDA_VISIBLE_DEVICES"] = '2'
 import numpy as np
 from tqdm import tqdm
@@ -25,7 +28,7 @@ from transformers import BertTokenizer, AdamW, get_linear_schedule_with_warmup, 
     BertModel
 from sklearn.model_selection import KFold
 import torch.nn.functional as F
-from modeling_nezha.modeling_nezha import NeZhaModel, NeZhaConfig, NeZhaPreTrainedModel
+from NeZha.model.modeling_nezha import NeZhaModel, NeZhaConfig, NeZhaPreTrainedModel
 
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
